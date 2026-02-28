@@ -32,14 +32,14 @@ const userAuth = async (req, res, next) => {
       throw new Error("Not a Vaid token !!");
     }
 
-    const deocodedObj = jwt.verify(token, JWT_SECRET);
-    const { _id } = deocodedObj;
+    const deocoded = jwt.verify(token, JWT_SECRET);
+    const { _id } = deocoded;
 
-    const user = await User.findById(_id);
-    if (!user) {
+    const userId = await User.findById(_id);
+    if (!userId) {
       throw new Error("User Not Found");
     }
-    req.user = user;
+    req.user = userId;
     next();
   } catch (err) {
     res.status(400).send("ERROR : " + err.message);

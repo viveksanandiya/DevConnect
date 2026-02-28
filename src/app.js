@@ -22,7 +22,7 @@ connectDb()
     
     app.listen(7777, () => {
       console.log("server lsitening on port 7777 ");
-    });
+    }); 
 })
 .catch((err)=>{
 console.log("db connection err"+ err.message);

@@ -1,14 +1,15 @@
 const express = require("express");
 const profileRouter = express.Router();
 const {userAuth} = require("../middleware/auth")
-const {validateEditProfileData} = require("../utils/validation");
 const UserModel = require("../models/user");
 
-profileRouter.get("/profile/view" ,userAuth,async (req,res)=>{
+profileRouter.get("/profile/view" ,userAuth ,async (req,res)=>{
     try{
         const user = req.user;
+        console.log(user)
 
-        const data = await UserModel.findById(user._id).select("-password");
+        const data = await UserModel.findById(user).select("-password");
+        console.log(data);        
         res.send((data));
 
     }catch(err){
