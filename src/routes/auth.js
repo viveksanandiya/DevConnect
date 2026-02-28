@@ -4,26 +4,26 @@ const bcrypt = require("bcrypt");
 const authRouter = express.Router();
 const {z} = require("zod");
 const jwt = require("jsonwebtoken")
-const JWT_USER_PASSWORD = "vivek@123";
+require("dotenv").config();
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 authRouter.post("/signup", async (req, res) => {
   
     const zodSchema = z.object({
         firstName : z.string().min(2).max(50),
         password : z.string().min(5).max(50),
-        lastName: z.string(),
-        emailId : z.email()
+        lastName: z.string().optional(),
+        emailId : z.string().email()
     })
  
     const parsedData = zodSchema.safeParse(req.body);
 
     if(!parsedData.success){
-        console.log("bad data")
-        res.json({
-            message: "incorrect format of data",
+        return res.status(400).json({
+            message: "Incorrect format of data",
             error: parsedData.error
-        })
-        return
+        });
     }
   
   try {
@@ -33,7 +33,7 @@ authRouter.post("/signup", async (req, res) => {
     const userExist = await UserModel.findOne({emailId});
 
     if(userExist){
-      res.status().json({message: "User exist"});
+      res.status(409).json({message: "User already exist"});
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -46,68 +46,68 @@ authRouter.post("/signup", async (req, res) => {
         password: passwordHash
     });
     await user.save(); 
-    res.send("User added succefully !");
-
+   res.status(201).json({ success: true, message: "User registered successfully!" });
   } catch (err) {
-    res.status(400).json({
-      success : false,
-      message : err.message
-    });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
 authRouter.post("/login", async (req, res) => {
   const zodSchema = z.object({
-        emailId: z.email(),
+        emailId: z.string().email(),
         password: z.string().min(5).max(50)
     });
     
     const parsedData = zodSchema.safeParse(req.body);
 
     if (!parsedData.success) {
-        res.json({
-            message: "incorrect format of data",
-            error: parsedData.error
+        res.status(400).json({
+            message: "Incorrect format of data",
+            error: parsedData.error.flatten(),
         })
         return
     }
   
   try {
-    const { emailId, password } = req.body;
+    const { emailId, password } = parsedData.data;
 
     const existingUser =await UserModel.findOne({ emailId });
     if (!existingUser) {
       throw new Error("Invalid creds, please check your email or password");
     }
-
-    const dbPassword = existingUser.password;
-
-    const passwordMatch =await bcrypt.compare( password,dbPassword);
+    //existingUser.password is from db
+    const passwordMatch =await bcrypt.compare( password, existingUser.password);
  
     if( !passwordMatch){
       throw new Error("Invalid creds,  please check your email or password---");
     }
 
     const token = jwt.sign({
-      id: existingUser._id,
-    }, JWT_USER_PASSWORD);
+      _id: existingUser._id,
+    }, JWT_SECRET,
+  {
+    expiresIn: "1hr" 
+  });
 
     res.cookie("token", token, {
       expires: new Date(Date.now() + 3600000),
     });
     
-    res.send("login successful !");
+res.json({ success: true, message: "Login successful!" });
   } catch (err) {
-    res.status(400).send("Error caught ?? " + err.message);
+    res.status(400).json({
+      success: false,
+      message: err.message
+    });
   }
 });
 
 authRouter.post("/logout", async (req, res) => {
   try {
     res.clearCookie("token");
-    res.send("logout successful !");
+    res.json({ success: true, message: "Logout successful!" });
   } catch (err) {
-    res.status(400).send("Error " + err.message);
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
