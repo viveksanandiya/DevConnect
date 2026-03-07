@@ -98,7 +98,7 @@ userRouter.get("/feed", userAuth, async(req,res)=>{
         //skip-> skips previous users & limit ->limits the no of users fetched at a time
         
         res.json({
-            users
+            data : users
         })
 
     }catch(err){
