@@ -12,11 +12,9 @@ const userAuth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log("Decoded token:", decoded);
 
     const _id = decoded._id ;
     const user = await User.findById(_id);
-    console.log("found user:-" , user);
 
     if (!user) {
       throw new Error("User Not Found");

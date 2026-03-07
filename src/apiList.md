@@ -18,4 +18,4 @@
 
 -get /user/connection
 -get /user/requests
--get/user/feed  -gets you the profiles of other user on platform
+-get/feed  -gets you the profiles of other user on platform
