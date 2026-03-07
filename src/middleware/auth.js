@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const UserModel = require("../models/user");
+const User = require("../models/user");
 const JWT_SECRET = process.env.JWT_SECRET;
 require("dotenv").config();
  
@@ -15,7 +15,7 @@ const userAuth = async (req, res, next) => {
     console.log("Decoded token:", decoded);
 
     const _id = decoded._id ;
-    const user = await UserModel.findById(_id);
+    const user = await User.findById(_id);
     console.log("found user:-" , user);
 
     if (!user) {

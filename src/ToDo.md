@@ -1,5 +1,8 @@
-# Todo's 
--res.json({}) instead of res.send();
+## Todo's
 
--change validation according to you
+# s2e12
+-why do we need index , adv and disAdv of using indexes ?
+-what is compound index
+-$or Query
 
+# s2e13

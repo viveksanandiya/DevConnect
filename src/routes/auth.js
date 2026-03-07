@@ -1,5 +1,5 @@
 const express = require("express");
-const UserModel  = require("../models/user");
+const User  = require("../models/user");
 const bcrypt = require("bcrypt");
 const authRouter = express.Router();
 const {z} = require("zod");
@@ -30,7 +30,7 @@ authRouter.post("/signup", async (req, res) => {
  
     const {emailId, password , firstName , lastName} = req.body;
 
-    const userExist = await UserModel.findOne({emailId});
+    const userExist = await User.findOne({emailId});
 
     if(userExist){
       res.status(409).json({message: "User already exist"});
@@ -39,7 +39,7 @@ authRouter.post("/signup", async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
     
     //creating new instance of user model
-    const user = new UserModel({
+    const user = new User({
         firstName,
         lastName, 
         emailId,
@@ -71,7 +71,7 @@ authRouter.post("/login", async (req, res) => {
   try {
     const { emailId, password } = parsedData.data;
 
-    const existingUser =await UserModel.findOne({ emailId });
+    const existingUser =await User.findOne({ emailId });
     if (!existingUser) {
       throw new Error("Invalid creds, please check your email or password");
     }
