@@ -1,9 +1,12 @@
+require("dotenv").config();
 const express = require("express");
 const { connectDb} = require("./config/db");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express();
 
+app.use(cors);
 //express has inbuilt middleware which converts JSON data into JS object so we dont need to
 app.use(express.json());
 app.use(cookieParser());

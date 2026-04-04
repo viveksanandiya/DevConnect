@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt");
 const authRouter = express.Router();
 const {z} = require("zod");
 const jwt = require("jsonwebtoken")
-require("dotenv").config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -86,7 +85,7 @@ authRouter.post("/login", async (req, res) => {
       _id: existingUser._id,
     }, JWT_SECRET,
   {
-    expiresIn: "1hr" 
+    expiresIn: "1h" 
   });
 
     res.cookie("token", token, {

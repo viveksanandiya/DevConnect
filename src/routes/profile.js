@@ -38,7 +38,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     try {
         const userId = req.user._id;
         
-        const {firstName, lastName, about, skills, age, gender} = req.body;
+        const {firstName, lastName, about, skills, age, gender} = parsedData.data;
         
         const updatedUser = await User.findByIdAndUpdate(userId, {
             firstName,
@@ -83,9 +83,13 @@ profileRouter.patch("/profile/password", userAuth, async (req,res)=>{
         const userId = req.user._id;
         const {password} = req.body;
 
-        const updatedData = await User.findOneAndUpdate(userId,{
-            password
-        },{new: true})
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const updatedData = await User.findOneAndUpdate(
+            {_id : userId},
+            {password: hashedPassword},
+            {new: true}
+        )
 
         res.status(200).json({
             success: true,
